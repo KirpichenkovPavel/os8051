@@ -1,4 +1,7 @@
 #include "dispatcher.h"
+#include <8052.h>
+#define PROCESS_AMOUNT 10
+
 volatile struct List processQueue;
 volatile int var;
 
@@ -15,17 +18,20 @@ struct Node* getLast(struct List *list) {
         return list->head->prev;
 }
 
-void addProcess(struct List *list, struct Process *process) {
-    struct Node *last;
-    struct Node node;
-    node.process = process;
+void addProcess(struct List *list, struct Node *node) {
+    struct Node *last, *head;
+
+    last = getLast(list);
+    head = list->head;
     if (list->length > 0) {
-        last = getLast(list);
-        node.prev = last;
-        node.next = list->head;
+        node->prev = last;
+        node->next = head;
+        last->next = node;
+        head->prev = node;
     } else {
-        node.prev = &node;
-        node.next = &node;
+        node->prev = node;
+        node->next = node;
+        list->head = node;
     }
     list->length += 1;
 }
@@ -36,24 +42,37 @@ void shiftList(struct List *list) {
     list->head = list->head->next;
 }
 
-void initProcesses() {
-    volatile struct Process process1, process2;
-
-    initList(&processQueue);
-    process1.id = 1;
-    process2.id = 2;
-    addProcess(&processQueue, &process1);
-    addProcess(&processQueue, &process2);
+void queueStatus() {
+    P0 = processQueue.head->process->id;
+    P1 = processQueue.head->next->process->id;
+    P2 = processQueue.head->next->next->process->id;
+    P3 = processQueue.head->next->next->next->process->id;
 }
 
-//void timerSwitch(void) __interrupt (1) {
-//
-//}
+void initProcesses() {
+    int i;
+    struct Process processes[PROCESS_AMOUNT];
+    struct Node nodes[PROCESS_AMOUNT];
 
+    initList(&processQueue);
+    for (i = 0; i < PROCESS_AMOUNT; i++) {
+        processes[i].id = i;
+        nodes[i].process = &processes[i];
+        addProcess(&processQueue, &nodes[i]);
+        queueStatus();
+    }
+}
+
+void initTimer() {
+    TMOD = 0x1;     // Timer mode.
+    TL0 = 0;        // Clear
+    TH0 = 0;        // Reg's.
+    TR0 = 1;        // Set timer to run.
+    ET0 = 1;        // Set interrupt.
+    EA = 1;
+}
 
 void timer0Interrupt(void) __interrupt(1) {
-    if (var == 0)
-        var = 7;
-    else
-        var = 0;
+    shiftList(&processQueue);
+    queueStatus();
 }

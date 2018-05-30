@@ -19,7 +19,9 @@ struct List {
 };
 
 void initList(struct List *list);
-void addProcess(struct List *list, struct Process *process);
+void addProcess(struct List *list, struct Node *node);
 void initProcesses();
+void timer0Interrupt(void) __interrupt(1);
+void initTimer();
 
 #endif //OS8051_DISPATCHER_H_H
