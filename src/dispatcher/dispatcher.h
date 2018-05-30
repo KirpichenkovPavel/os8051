@@ -1,13 +1,15 @@
 #ifndef OS8051_DISPATCHER_H_H
 #define OS8051_DISPATCHER_H_H
 
+extern volatile int var;
+
 struct Process {
     int id;
 };
 
 struct Node {
-    struct Process *next;
-    struct Process *prev;
+    struct Node *next;
+    struct Node *prev;
     struct Process *process;
 };
 
@@ -18,5 +20,6 @@ struct List {
 
 void initList(struct List *list);
 void addProcess(struct List *list, struct Process *process);
+void initProcesses();
 
 #endif //OS8051_DISPATCHER_H_H

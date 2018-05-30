@@ -5,14 +5,19 @@ void delay(void);
 
 void main(void)
 {
-    struct List list;
-    struct Process process1, process2;
-
-    initList(&list);
-    process1.id = 1;
-    process2.id = 2;
-    addProcess(&list, &process1);
-    addProcess(&list, &process2);
+//    initProcesses();
+    TMOD = 0x3;        // Timer mode.
+    TL0 = 0;        // Clear
+    TH0 = 0;        // Reg's.
+    TR0 = 1;        // Set timer to run.
+    ET0 = 1;        // Set interrupt.
+    EA = 1;
+    while (1) {
+        P0 = var;
+    }
+    // Set global interrupt.
+    /*
+     *
     while(1)
     {
         P1 = 0xFF; // Turn ON all LED's connected to Port1
@@ -20,6 +25,7 @@ void main(void)
         P1 = 0x00; // Turn OFF all LED's connected to Port1
         delay();
     }
+     */
 }
 
 void delay(void)
