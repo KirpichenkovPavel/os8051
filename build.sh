@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 cd build
 rm -rf ./*
-sdcc -c ../src/dispatcher/dispatcher.c --model-large
-sdcc ../src/entry.c dispatcher.rel --model-large
+sdcc -c ../src/workers/workers.c
+sdcc -c ../src/dispatcher/dispatcher.c
+sdcc ../src/entry.c workers.rel dispatcher.rel

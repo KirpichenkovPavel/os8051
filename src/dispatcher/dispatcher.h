@@ -4,7 +4,11 @@
 extern volatile int var;
 
 struct Process {
-    int id;
+    unsigned char screen[8];
+    void (*routine)(void);
+    unsigned char id;
+    unsigned char sp;
+    unsigned char stack[128];
 };
 
 struct Node {
@@ -15,7 +19,7 @@ struct Node {
 
 struct List {
     struct Node *head;
-    int length;
+    unsigned char length;
 };
 
 void initList(struct List *list);
